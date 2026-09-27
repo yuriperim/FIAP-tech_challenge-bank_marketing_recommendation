@@ -1,0 +1,15 @@
+[project]
+name = "bank_marketing_recommendation_training"
+version = "0.1.0"
+authors = [
+    {name = "Yuri Perim", email = "yuriperim@gmail.com"}
+]
+
+requires-python = ">=3.10"
+
+dependencies = [
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.9",
+    "pandas>=2.3.3",
+    "seaborn>=0.13.2",
+]
