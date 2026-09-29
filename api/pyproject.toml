@@ -1,0 +1,14 @@
+[project]
+name = "bank_marketing_recommendation_api"
+version = "0.1.0"
+authors = [
+    {name = "Yuri Perim", email = "yuriperim@gmail.com"}
+]
+
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi[standard]>=0.142.0",
+    "numpy>=2.2.6",
+    "uvicorn[standard]>=0.54.0",
+]
