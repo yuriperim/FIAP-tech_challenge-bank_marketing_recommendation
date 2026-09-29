@@ -1,0 +1,10 @@
+{
+  "telephone": {
+    "alpha": 4.0,
+    "beta": 91.0
+  },
+  "cellular": {
+    "alpha": 2114.0,
+    "beta": 12795.0
+  }
+}
