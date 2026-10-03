@@ -1,0 +1,66 @@
+name: Build imagem API e envio para ECR
+
+on:
+  push:
+    branches: [main]
+    # Workflow disparado quando houver alterações nos arquivos abaixo
+    paths:
+      - "api/**"
+      - ".github/workflows/ci.yml"
+  # Permite disparar o workflow manualmente
+  workflow_dispatch:
+
+permissions:
+  # Permite que o workflow solicite um token OIDC para o GitHub
+  id-token: write
+  # Permite que o workflow faça a leitura do repo para checkout do código
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Obtenção credenciais AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Parse versão API
+        id: app-version
+        # grep: pega a primeira ocorrência (-m 1) de uma linha iniciada com version
+        # sed: procura pela regex 'version = "(.*)"' na linha recebida, e substitui o match pelo primeiro grupo de captura (\1)
+        # [ -z "$VERSION" ]: verdadeiro se "$VERSION" for string vazia
+        # >&2: redireciona output para stderr
+        # $GITHUB_OUTPUT: variável de ambiente que resolve para um arquivo temporário, permitindo "comunicação" entre steps
+        run: |
+          VERSION=$(grep -m 1 '^version' api/pyproject.toml | sed -E 's/version = "(.*)"/\1/')
+          if [ -z "$VERSION" ]; then
+            echo "Falha ao parsear versão da API do arquivo api/pyproject.toml" >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build e envio imagem
+        env:
+          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: bank-marketing-recommendation-api
+          # Substitui imagem base do Dockerfile, deixando de usar Docker Hub e passando a usar ECR Public
+          BASE_IMAGE: public.ecr.aws/docker/library/python:3.10-slim
+          IMAGE_TAG: ${{ steps.app-version.outputs.version }}
+        run: |
+          docker build \
+            --build-arg BASE_IMAGE=$BASE_IMAGE \
+            -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            ./api
+          docker push $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
