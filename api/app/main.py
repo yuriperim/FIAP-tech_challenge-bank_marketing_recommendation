@@ -1,12 +1,12 @@
-from pathlib import Path
-from collections import namedtuple
 import json
+from collections import namedtuple
+from pathlib import Path
+
 import numpy as np
 from fastapi import FastAPI
 
 from app.schemas.request_schemas import CustomerRequest
 from app.schemas.response_schemas import NonContextualRecommendation
-
 
 app = FastAPI()
 rng = np.random.default_rng()
