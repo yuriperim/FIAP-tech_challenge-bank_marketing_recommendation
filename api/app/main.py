@@ -22,10 +22,12 @@ arm_params = {arm: ArmParams(**params) for arm, params in arm_params_raw.items()
 @app.post(
     "/recommend/non-contextual",
     response_model=NonContextualRecommendation,
-    description="Recomenda um canal de contato utilizando Thompson Sampling não contextual"
+    description="Recomenda um canal de contato utilizando Thompson Sampling não contextual",
 )
 def recommend_non_contextual(customer: CustomerRequest) -> NonContextualRecommendation:
-    arm_probs = {arm: rng.beta(params.alpha, params.beta) for arm, params in arm_params.items()}
+    arm_probs = {
+        arm: rng.beta(params.alpha, params.beta) for arm, params in arm_params.items()
+    }
     chosen_arm = max(arm_probs, key=arm_probs.get)
 
     return NonContextualRecommendation(
