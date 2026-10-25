@@ -44,10 +44,11 @@ data "aws_iam_policy_document" "ecr_push" {
     effect = "Allow"
     actions = [
       "ecr:BatchCheckLayerAvailability",
-      "ecr:PutImage",
-      "ecr:InitiateLayerUpload",
-      "ecr:UploadLayerPart",
+      "ecr:BatchGetImage",
       "ecr:CompleteLayerUpload",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart",
     ]
     resources = [aws_ecr_repository.api_repository.arn]
   }
