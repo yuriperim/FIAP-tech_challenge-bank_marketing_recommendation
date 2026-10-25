@@ -10,17 +10,40 @@ on:
   # Permite disparar o workflow manualmente
   workflow_dispatch:
 
-permissions:
-  # Permite que o workflow solicite um token OIDC para o GitHub
-  id-token: write
-  # Permite que o workflow faça a leitura do repo para checkout do código
-  contents: read
-
-env:
-  AWS_REGION: us-east-1
-
 jobs:
+  lint:
+    permissions:
+      # Permite que o job faça a leitura do repo para checkout do código
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Formatação Ruff
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          version-file: api/pyproject.toml
+          # Checa formatação, sem fazer alterações, e mostra como arquivo final ficaria
+          # --check não é necessário com --diff, mas mostra intenção
+          args: format --check --diff
+          src: api
+
+      - name: Lint Ruff
+        uses: astral-sh/ruff-action@v4.1.0
+        with:
+          version-file: api/pyproject.toml
+          # Realiza análise estática, sem fazer alterações
+          args: check
+          src: api
+
   build-and-push:
+    needs: lint
+    permissions:
+      # Permite que o job faça a leitura do repo para checkout do código
+      contents: read
+      # Permite que o job solicite um token OIDC para o GitHub
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,8 +52,8 @@ jobs:
       - name: Obtenção credenciais AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          aws-region: us-east-1
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login ECR
         id: ecr-login
