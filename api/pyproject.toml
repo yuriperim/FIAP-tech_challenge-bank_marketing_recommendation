@@ -17,3 +17,5 @@ dependencies = [
 dev = [
     "ruff==0.17.2",
 ]
+
+[tool.ruff]
