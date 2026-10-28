@@ -25,7 +25,17 @@ variable "github_owner" {
   type        = string
 }
 
+variable "github_owner_id" {
+  description = "ID do usuário GitHub"
+  type        = string
+}
+
 variable "github_repo" {
   description = "Repositório GitHub"
+  type        = string
+}
+
+variable "github_repo_id" {
+  description = "ID do repositório GitHub"
   type        = string
 }

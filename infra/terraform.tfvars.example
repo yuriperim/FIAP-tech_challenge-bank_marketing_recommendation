@@ -1,2 +1,4 @@
 github_owner = "github-username-or-org"
+github_owner_id = "github-username-or-org-id"
 github_repo  = "github-repo-name"
+github_repo_id  = "github-repo-id"
