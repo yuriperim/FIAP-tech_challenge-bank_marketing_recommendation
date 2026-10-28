@@ -1,4 +1,5 @@
 from enum import Enum
+
 from pydantic import BaseModel, Field
 
 
@@ -48,20 +49,9 @@ class PreviousOutcome(str, Enum):
 
 
 class CustomerRequest(BaseModel):
-    age: int = Field(
-        ...,
-        ge=17,
-        le=100,
-        description="Idade (anos)"
-    )
+    age: int = Field(..., ge=17, le=100, description="Idade (anos)")
     education: Education
     job: Job
     marital: MaritalStatus
-    default: YesNoUnknown = Field(
-        ...,
-        description="Tem dívida em atraso (default)?"
-    )
-    poutcome: PreviousOutcome = Field(
-        ...,
-        description="Resultado da última campanha"
-    )
+    default: YesNoUnknown = Field(..., description="Tem dívida em atraso (default)?")
+    poutcome: PreviousOutcome = Field(..., description="Resultado da última campanha")
